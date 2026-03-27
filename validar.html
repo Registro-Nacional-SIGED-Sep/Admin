@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Documento Académico | Registro Nacional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #ebebeb;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .contenedor-principal {
+            width: 100%;
+            max-width: 480px;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra superior institucional */
+        .barra-superior {
+            background-color: #13322B; /* Verde Institucional México */
+            padding: 15px;
+            text-align: center;
+            border-bottom: 4px solid #D4AF37; /* Dorado */
+        }
+
+        .barra-superior img {
+            height: 45px;
+            filter: brightness(0) invert(1); /* Hace el escudo blanco para que resalte */
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            padding: 20px 10px;
+            background-color: #f8f8f8;
+        }
+
+        .titulo-seccion h1 {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .estado-validacion {
+            margin: 20px auto;
+            width: fit-content;
+            padding: 8px 25px;
+            background-color: #28a745; /* Verde éxito */
+            color: white;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Ficha de datos */
+        .ficha-datos {
+            padding: 0 25px;
+            flex-grow: 1;
+        }
+
+        .campo {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .valor {
+            font-size: 16px;
+            color: #333;
+            font-weight: 400;
+            word-break: break-word;
+        }
+
+        .valor-bold {
+            font-weight: 700;
+            color: #13322B;
+        }
+
+        /* Pie de página */
+        .footer-institucional {
+            background-color: #f4f4f4;
+            padding: 25px;
+            font-size: 10px;
+            color: #777;
+            text-align: justify;
+            line-height: 1.5;
+            border-top: 1px solid #ddd;
+        }
+
+        .sello-digital {
+            font-family: monospace;
+            font-size: 8px;
+            word-break: break-all;
+            margin-top: 10px;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <div class="barra-superior">
+             
+        </div>
+
+        <div class="titulo-seccion">
+            <h1>Sistema de Validación de Certificados Digitales</h1>
+        </div>
+
+        <div class="estado-validacion">
+            <span>✓</span> DOCUMENTO AUTÉNTICO Y REGISTRADO
+        </div>
+
+        <div class="ficha-datos">
+            <div class="campo">
+                <div class="label">Nombre del Titular</div>
+                <div class="valor valor-bold" id="txt-nombre">CARGANDO...</div>
+            </div>
+
+            <div class="campo">
+                <div class="label">CURP / Identificador</div>
+                <div class="valor" id="txt-curp">CARGANDO...</div>
+            </div>
+
+            <div class="campo">
+                <div class="label">Nivel Educativo Acreditado</div>
+                <div class="valor" id="txt-nivel">CARGANDO...</div>
+            </div>
+
+            <div class="campo">
+                <div class="label">Tipo de Emisión</div>
+                <div class="valor">Certificación Digital por Competencias</div>
+            </div>
+
+            <div class="campo">
+                <div class="label">Fecha de Validación en Sistema</div>
+                <div class="valor" id="txt-fecha">26 de Marzo de 2026</div>
+            </div>
+        </div>
+
+        <div class="footer-institucional">
+            <p><strong>AVISO LEGAL:</strong> Esta consulta electrónica confirma que los datos del ciudadano coinciden con los registros del sistema digital de acreditación. Este documento es para fines de verificación informativa y cuenta con validez electrónica mediante el Código QR escaneado.</p>
+            <div class="label">Firma Electrónica Avanzada (Sello):</div>
+            <div class="sello-digital">
+                FEA: 8273-X92-2938-ARQ-99283-MX-7721-PABLO-E-92838-8283-VALID-QR-OFFICIAL
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para leer los parámetros que vienen en el link (URL)
+        function cargarDatos() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Obtenemos los valores de 'nombre', 'curp' y 'nivel'
+            const nombre = params.get('nombre');
+            const curp = params.get('curp');
+            const nivel = params.get('nivel');
+
+            // Los inyectamos en el HTML si existen
+            if (nombre) document.getElementById('txt-nombre').innerText = decodeURIComponent(nombre);
+            if (curp) document.getElementById('txt-curp').innerText = decodeURIComponent(curp).toUpperCase();
+            if (nivel) document.getElementById('txt-nivel').innerText = decodeURIComponent(nivel).toUpperCase();
+            
+            // Ponemos la fecha actual automáticamente
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            const hoy = new Date().toLocaleDateString('es-MX', opciones);
+            document.getElementById('txt-fecha').innerText = hoy;
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = cargarDatos;
+    </script>
+
+</body>
+</html>
