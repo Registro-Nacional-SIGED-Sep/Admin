@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Maestro - Generador de Certificados Digitales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .main-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        /* ESTILOS DEL PANEL DE CONTROL (IZQUIERDA) */
+        .panel-control {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            width: 350px;
+            flex-shrink: 0;
+        }
+        h2 {
+            color: #1a1a1a;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box; /* Importante para el padding */
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+        .btn-generate {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-generate:hover {
+            background-color: #2980b9;
+        }
+        /* ESTILOS DE LA VISTA PREVIA (DERECHA) */
+        .preview-container {
+            flex-grow: 1;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .cert-preview {
+            width: 100%;
+            height: 600px; /* Altura de la vista previa */
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background-color: #fcf6e5; /* Color crema vintage */
+        }
+        /* EL CÓDIGO QR GENERADO (Sin bordes) */
+        #qrcode {
+            position: absolute;
+            bottom: 30mm; /* Ajusta según tu formato */
+            left: 20mm;   /* Ajusta según tu formato */
+            width: 40mm;  /* Tamaño nítido del QR */
+            height: 40mm;
+            z-index: 10;
+        }
+        #qrcode img {
+            width: 100%;
+            height: 100%;
+            display: block; /* Quita márgenes por defecto */
+        }
+        .url-display {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #7f8c8d;
+            word-break: break-all;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="panel-control">
+            <h2>Generador Pro</h2>
+            
+            <div class="form-group">
+                <label for="nombre">Nombre Completo del Titular</label>
+                <input type="text" id="nombre" placeholder="Ej: JUAN PEREZ LOPEZ" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label for="curp">CURP (18 Caracteres)</label>
+                <input type="text" id="curp" placeholder="Ej: ABCD123456HDFRNS01" maxlength="18" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label for="nivel">Nivel Educativo</label>
+                <select id="nivel">
+                    <option value="PRIMARIA">PRIMARIA</option>
+                    <option value="SECUNDARIA">SECUNDARIA</option>
+                    <option value="PREPARATORIA GENERAL">PREPARATORIA GENERAL</option>
+                </select>
+            </div>
+
+            <button class="btn-generate" onclick="generateCertificate()">GENERAR QR Y VISTA PREVIA</button>
+        </div>
+
+        <div class="preview-container">
+            <h2>Vista Previa del Certificado (Muestra)</h2>
+            <div class="cert-preview">
+                <div style="padding: 20px; text-align: center; color: #a38b5f; font-family: 'Times New Roman';">
+                    <h3 style="text-transform: uppercase;">Sistema Educativo Nacional</h3>
+                    <p>CERTIFICA QUE:</p>
+                    <h1 id="preview-nombre" style="text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">[NOMBRE AQUÍ]</h1>
+                    <p>ACREDITÓ LA EDUCACIÓN <span id="preview-nivel" style="font-weight: bold;">[NIVEL AQUÍ]</span></p>
+                </div>
+                
+                <div id="qrcode"></div>
+            </div>
+            
+            <div class="url-display" id="url-display">La URL de validación aparecerá aquí...</div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN: Pon aquí la URL real de tu página de validación online
+        const BASE_URL_VALIDACION = "https://tusitio.web.app/validacion.html"; 
+
+        // Inicializamos el objeto QRCode una sola vez
+        let qrcode;
+
+        function generateCertificate() {
+            // 1. Obtenemos los datos del formulario
+            const nombre = document.getElementById('nombre').value.trim();
+            const curp = document.getElementById('curp').value.trim();
+            const nivel = document.getElementById('nivel').value;
+
+            // Validación básica
+            if (!nombre || !curp || curp.length !== 18) {
+                alert("Por favor, llena todos los campos correctamente. La CURP debe tener 18 caracteres.");
+                return;
+            }
+
+            // 2. Actualizamos la Vista Previa de Texto
+            document.getElementById('preview-nombre').innerText = nombre;
+            document.getElementById('preview-nivel').innerText = nivel;
+
+            // 3. Generamos la URL Dinámica de Validación
+            // Usamos encodeURIComponent para manejar espacios y acentos correctamente
+            const finalURL = `${BASE_URL_VALIDACION}?nombre=${encodeURIComponent(nombre)}&curp=${encodeURIComponent(curp)}&nivel=${encodeURIComponent(nivel)}`;
+            document.getElementById('url-display').innerText = `URL de Validación Generada:\n${finalURL}`;
+
+            // 4. Generamos el Código QR (Sin bordes)
+            // Limpiamos el contenedor del QR anterior
+            document.getElementById('qrcode').innerHTML = "";
+
+            // Creamos el nuevo QR
+            qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: finalURL,
+                width: 150, // Tamaño en píxeles (aprox 40mm a 96dpi)
+                height: 150,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H, // Nivel de corrección alto para asegurar lectura
+                useSVG: false // Usar imagen PNG por defecto
+            });
+
+            // EL TOQUE FINAL: QRCode.js a veces añade un borde blanco sutil. 
+            // Forzamos que la imagen ocupe todo el contenedor sin márgenes.
+            setTimeout(() => {
+                const qrImg = document.querySelector('#qrcode img');
+                if (qrImg) {
+                    qrImg.style.border = "none";
+                    qrImg.style.padding = "0";
+                    qrImg.style.margin = "0";
+                    qrImg.style.display = "block";
+                }
+            }, 50); // Pequeño delay para asegurar que la imagen se generó
+        }
+    </script>
+
+</body>
+</html>
